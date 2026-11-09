@@ -2984,6 +2984,8 @@ winning:
 | `mock_response` | litellm answers it locally, so the run never reaches a model | nothing: a test that wants a canned answer injects its own LM |
 | `api_base`, `headers`, `extra_headers`, `extra_query`, `api_version`, `organization`, `project`, `azure_ad_token_provider`, `deployment_id`, `model_list`, `engine`, and any key starting `aws_`, `azure_` or `vertex_` | the other names dspy lists as client settings, litellm `completion()`'s routing parameters, and litellm's provider credential and region settings. A provider-specific key outside those three prefixes is not caught. With `base_url` unset, `api_base` sends the run to another endpoint, and an `Authorization` header in `extra_headers` changes the caller without touching `api_key`; a header that only tags a route looks the same in the trace | build that role's LM and inject it with `configure(main_lm=…)` / `configure(sub_lm=…)` |
 
+A consumer that reads the same kwargs from its own settings can check them before running anything by constructing the config, `RLMConfig(main_model, sub_model, main_lm_kwargs=...)`, which raises `ValueError` naming every refused key. That is the public check; the helper behind it is internal.
+
 `max_tokens` is deliberately NOT refused, and the line is not "everything the kit sets". It is
 whether the TRACE can see the override. `max_tokens` is read back off the LM into `budgets`
 (`_dspy_compat.applied_lm_budget`), so a per-role cap is self-documenting, and that is how you get

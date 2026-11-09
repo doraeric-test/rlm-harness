@@ -74,8 +74,8 @@ def test_valid_json_of_the_wrong_shape_raises_TypeError_naming_the_variable(monk
 
 @pytest.mark.parametrize("key", sorted(_LM_KWARGS_REFUSED))
 def test_a_configure_owned_key_is_refused_at_parse_time(key):
-    """Refused rather than silently dropped OR silently winning. Nothing records an override of
-    these, so a silent one leaves a trace that reads exactly like a run that went somewhere else."""
+    """Refused rather than silently dropped OR silently winning. The trace records at most their
+    names, never their values, so it could not show that the run went somewhere else."""
     with pytest.raises(ValueError, match=key):
         _cfg(main_lm_kwargs={key: "x"})
     with pytest.raises(ValueError, match=key):
@@ -128,6 +128,15 @@ def test_the_refusal_names_every_offending_key_and_the_alternative():
     assert "'base_url'" in msg and "'timeout'" in msg
     assert "RLM_BASE_URL" in msg and "RLM_REQUEST_TIMEOUT" in msg
     assert "extra_body" not in msg, "a legitimate key must not be reported as refused"
+
+
+def test_the_refusal_does_not_claim_the_trace_records_nothing():
+    """`rlm_setup.lm.unrecorded_keys` names a non-allowlisted key, so the message says what is
+    actually missing: the value."""
+    with pytest.raises(ValueError) as exc:
+        _cfg(main_lm_kwargs={"api_base": "x"})
+    msg = str(exc.value)
+    assert "never their values" in msg and "nothing records" not in msg
 
 
 def test_a_refused_key_is_refused_through_env_too(monkeypatch):

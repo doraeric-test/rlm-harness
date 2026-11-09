@@ -4,6 +4,12 @@ All notable changes to `rlm-harness`. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/). Versions track
 `rlm_harness/__init__.__version__` and `pyproject.toml` (kept in sync).
 
+## [Unreleased]
+
+### Fixed
+
+- The error `RLMConfig` raises for a refused `main_lm_kwargs` / `sub_lm_kwargs` key no longer says nothing records the override. The trace names such a key in `rlm_setup.lm.unrecorded_keys`; what it never records is the value, and the message now says that.
+
 ## [1.26.0] - 2026-11-06
 
 **`export_counterfactual_extracts` builds extract-fallback training samples from runs that ended by SUBMIT.** dspy sends its `extract` request only when a trajectory runs out of iterations, so real extract calls are rare in a corpus and mostly come from runs that failed. A run that submitted holds everything the same call needs: the extract signature in `rlm_setup`, the turns before its SUBMIT, and the values it submitted.

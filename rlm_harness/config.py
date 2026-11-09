@@ -450,9 +450,9 @@ class RLMConfig:
                 refused = list(reasons)
                 detail = "; ".join(f"{k!r}: {why}" for k, why in reasons.items())
                 raise ValueError(
-                    f"{field_name} may not set {refused} -- configure() owns these and nothing "
-                    f"records an override, so a silent one would leave a trace that reads like a "
-                    f"run that went somewhere else. {detail}"
+                    f"{field_name} may not set {refused}: they decide where a run goes or who it "
+                    f"calls as, and the trace records at most their names, never their values, so "
+                    f"it could not show that the run went somewhere else. {detail}"
                 )
 
     @classmethod
