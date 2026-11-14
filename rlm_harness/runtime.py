@@ -198,7 +198,7 @@ def _maybe_subscription_lm(model: str) -> dspy.LM | None:
     dangerous default there than in a purpose-built CLI, which can catch `ValueError` and convert
     it to its own fail-fast behavior at its own top level if it wants that.
     """
-    from . import claude_agent_lm
+    from .community import claude_agent_lm
 
     if not model.startswith(claude_agent_lm.SUBSCRIPTION_PREFIX):
         return None

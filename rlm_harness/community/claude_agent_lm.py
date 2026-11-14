@@ -60,7 +60,7 @@ from typing import TYPE_CHECKING, Any
 
 import dspy
 
-from .trace import current_recorder
+from ..trace import current_recorder
 
 if TYPE_CHECKING:  # annotations only, never imported at runtime (the SDK is an optional extra)
     from claude_agent_sdk import ClaudeAgentOptions, ResultMessage

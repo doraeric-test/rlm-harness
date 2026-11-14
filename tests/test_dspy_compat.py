@@ -527,7 +527,7 @@ def test_a_copied_subscription_lm_still_routes_through_its_own_engine():
     sys.modules["claude_agent_sdk"] = mod
     had_key = os.environ.pop("ANTHROPIC_API_KEY", None)
     try:
-        from rlm_harness.claude_agent_lm import _AsyncClaudeAgentEngine, _ClaudeAgentEngine
+        from rlm_harness.community.claude_agent_lm import _AsyncClaudeAgentEngine, _ClaudeAgentEngine
 
         lm = rlm_harness.ClaudeAgentLM("sonnet")
         dup = _dspy_compat.copy_lm(lm, rollout_id=1)
@@ -1208,7 +1208,7 @@ def test_dspy_canonicalises_a_response_format_class_into_the_flat_shape_the_adap
     import dspy
     from pydantic import BaseModel
 
-    from rlm_harness.claude_agent_lm import _translate_response_format
+    from rlm_harness.community.claude_agent_lm import _translate_response_format
 
     class _Out(BaseModel):
         headline: str

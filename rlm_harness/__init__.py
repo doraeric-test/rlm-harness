@@ -288,11 +288,11 @@ def __getattr__(name: str):  # PEP 562 lazy re-export to defer dspy import
 
         return getattr(_mcp, name)
     if name == "ClaudeAgentLM":  # optional Claude subscription LM (imports dspy now, the SDK on use)
-        from .claude_agent_lm import ClaudeAgentLM
+        from .community.claude_agent_lm import ClaudeAgentLM
 
         return ClaudeAgentLM
     if name == "SUBSCRIPTION_PREFIX":  # the claude_agent_lm.py sentinel, joins the same lazy group
-        from .claude_agent_lm import SUBSCRIPTION_PREFIX
+        from .community.claude_agent_lm import SUBSCRIPTION_PREFIX
 
         return SUBSCRIPTION_PREFIX
     if name in _MEMORY_TASK_NAMES:  # the labelling passes: memory_tasks.py imports dspy, so lazily

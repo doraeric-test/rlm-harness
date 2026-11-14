@@ -92,7 +92,7 @@ class _StubClaudeAgentLM:
 
 
 def _stub_claude_agent_lm(monkeypatch):
-    import rlm_harness.claude_agent_lm as cal
+    import rlm_harness.community.claude_agent_lm as cal
 
     _StubClaudeAgentLM.calls = []
     monkeypatch.setattr(cal, "ClaudeAgentLM", _StubClaudeAgentLM)
@@ -232,7 +232,7 @@ def test_configure_stale_anthropic_api_key_raises_runtime_error_uncollided(monke
     # configure()'s own unrelated ownership-error swallow: the LM-construction step (where this
     # RuntimeError originates) runs entirely BEFORE the try/except that wraps dspy.configure(...),
     # so it cannot reach that handler regardless of message content.
-    import rlm_harness.claude_agent_lm as cal
+    import rlm_harness.community.claude_agent_lm as cal
 
     monkeypatch.setattr(rt, "_try_instrument", lambda: None)
     monkeypatch.setattr(cal, "_require_claude_agent_sdk", lambda: None)  # bypass the SDK-install check
