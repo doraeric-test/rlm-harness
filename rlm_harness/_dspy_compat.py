@@ -773,7 +773,7 @@ def applied_lm_budget(lm: Any) -> dict[str, Any] | None:
     **"Carries", not "applied", and the difference is not pedantry.** Reading ``lm.kwargs`` is
     right because dspy's own truncation check reads the same dict -- which is to say this rests on
     the assumption that an LM's kwargs ARE what it applied. That assumption has one shipped
-    counterexample: ``claude_agent_lm.ClaudeAgentLM`` tolerates and IGNORES a ``max_tokens=``
+    counterexample: ``community.claude_agent_lm.ClaudeAgentLM`` tolerates and IGNORES a ``max_tokens=``
     (the Claude Agent SDK exposes no sampling controls), so a cap passed there is reported here and
     ``completion_tokens`` can exceed it. This function cannot detect that -- an LM exposes no
     attestation of what it honoured -- so the honest contract is the one stated: this is what the

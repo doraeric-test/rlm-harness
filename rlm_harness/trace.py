@@ -725,7 +725,7 @@ class TraceRecorder:
         them after the fact is the only thing they do.
 
         A plain dict, because this module is dspy-free and SDK-free: the caller names the fields,
-        and `claude_agent_lm` is where an SDK event becomes one. Kept in arrival order, capped at
+        and `community.claude_agent_lm` is where an SDK event becomes one. Kept in arrival order, capped at
         :data:`MAX_RATE_LIMITS` with the overflow counted rather than silently dropped, since
         "how many times was this reported" is itself one of the things a reader wants.
         """
@@ -743,7 +743,7 @@ class TraceRecorder:
         NESTED even though nothing merges these events: the nesting was load-bearing against
         dspy's ``UsageTracker`` until 1.16.0, and keeping it means a reader that already parsed
         ``api_rounds["rounds"]`` out of the usage entry parses this payload unchanged. Entries stay
-        in the provider's own vocabulary; see ``claude_agent_lm._api_rounds`` for what one is and,
+        in the provider's own vocabulary; see ``community.claude_agent_lm._api_rounds`` for what one is and,
         more importantly, for what it is NOT (not a decomposition of the call's token totals).
 
         Returns the event, or ``None`` when there is nothing to record. Recorded live rather than

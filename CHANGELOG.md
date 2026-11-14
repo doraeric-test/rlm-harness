@@ -6,6 +6,16 @@ All notable changes to `rlm-harness`. Format loosely follows
 
 ## [Unreleased]
 
+### Added
+
+- **`rlm_harness/community/`**, one place for models that run on a vendor's consumer sign-in through the vendor's own tool, and the document to read before using any of them. `community/README.md` opens with what the kit does not promise: that a route keeps working, that it is affiliated with any vendor, or that it reads anyone's terms for you. Its table gives each route the vendor's own words, a link and the date they were read. `ROUTES` is the prefix table `configure()` routes `main_model` / `sub_model` by, so a new route is one entry there and needs no change to `runtime.py`. A route whose vendor has not explicitly allowed this use logs one warning per process the first time it is built. `ClaudeAgentLM` is the only route today, and Anthropic allows it in writing, so no existing run logs anything new.
+
+### Changed
+
+- **`ClaudeAgentLM` lives in `rlm_harness/community/claude_agent_lm.py`.** `rlm_harness.ClaudeAgentLM`, `rlm_harness.SUBSCRIPTION_PREFIX` and `rlm_harness.community.ClaudeAgentLM` all work. `rlm_harness.claude_agent_lm` is an alias of the moved module, so imports, attribute access and `monkeypatch` through it reach the real one; it stays until the next major release and warns nothing. The module's logger is now `rlm_harness.community.claude_agent_lm`, so a logging filter on the old name needs the new one. `configure()` now imports an adapter module only when a model string names its prefix; it used to import `claude_agent_lm` on every call.
+- The warning `configure()` logs when `request_timeout_s` cannot reach an auto-routed role names the class each role was routed to, and no longer quotes a default deadline.
+- **Community routes added after `ClaudeAgentLM` are outside the SemVer promise** (`docs/CONVENTIONS.md`): they are exported from `rlm_harness.community` only and can be withdrawn in a minor release if a vendor objects.
+
 ### Fixed
 
 - The error `RLMConfig` raises for a refused `main_lm_kwargs` / `sub_lm_kwargs` key no longer says nothing records the override. The trace names such a key in `rlm_setup.lm.unrecorded_keys`; what it never records is the value, and the message now says that.

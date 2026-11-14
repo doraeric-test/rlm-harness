@@ -38,7 +38,8 @@ pitch, the quickstart, and installation: start at the
 | `_toolname.py` | REPL-safety rules for a tool's NAME and SIGNATURE. Mostly private, but `is_valid_tool_name` / `sanitize_tool_name` / `unique_tool_names` / `signature_from_json_schema` are public: a consumer building its own tools (e.g. from `McpCatalog`'s raw names) needs the same derivation the kit uses. |
 | `_dspy_compat.py` | Private. Every cross-version dspy difference (kwarg renames, the interpreter seam, the recoverable/terminal error split) resolved by introspection in ONE place. |
 | `rubric.py` | Reward-free rubric primitives: the `Criterion`/`RubricCriteria`/`CriterionFact` types, `rubric_to_meta`/`rubric_from_meta`, `validate_rubric`, and a pure `criteria_facts(criteria, facts, lens)`. `category` is an OPAQUE caller-defined label, the kit imposes no taxonomy. See "Building a consumer". |
-| `claude_agent_lm.py` | `ClaudeAgentLM`: run rlm-harness on a Claude Pro/Max subscription: a `dspy.LM` over the official Claude Agent SDK. `configure()` now auto-routes a `SUBSCRIPTION_PREFIX`-carrying (`"claude-agent-sdk/"`) `main_model`/`sub_model` string onto it, no explicit `main_lm=`/`sub_lm=` wiring needed unless you're overriding it. Opt-in `rlm-harness[subscription]`; pure completions (no tools), lazily exported so `import rlm_harness` stays dspy/SDK-free. |
+| `community/` | Models on a vendor's consumer sign-in, and the warning that comes with them: `community/README.md` is the document to read first, `ROUTES` the prefix table `configure()` routes by. |
+| `community/claude_agent_lm.py` | `ClaudeAgentLM`: run rlm-harness on a Claude Pro/Max subscription: a `dspy.LM` over the official Claude Agent SDK. `configure()` now auto-routes a `SUBSCRIPTION_PREFIX`-carrying (`"claude-agent-sdk/"`) `main_model`/`sub_model` string onto it, no explicit `main_lm=`/`sub_lm=` wiring needed unless you're overriding it. Opt-in `rlm-harness[subscription]`; pure completions (no tools), lazily exported so `import rlm_harness` stays dspy/SDK-free. |
 | `examples/mini_run.py` | Minimal end-to-end live run: config + a tiny `RLMTask` through a real `dspy.RLM`, with the trajectory recorded and summarised. |
 | `examples/memory_run.py` | One live run over the whole memory arc: a host seeding `observed` and `said` items, the three tools in a task, `compute_memory_use`, `consolidate_run`, and `purge`. |
 | `examples/claude_agent_lm.py` | Runnable demo of `ClaudeAgentLM`: a tiny `RLMTask` through a real `dspy.RLM` on a subscription login. |
@@ -1489,12 +1490,12 @@ while the prompt still offered it.
 
 ## Subscription logins: this kit's adapter, and dspy's own providers
 
+**Read [`community/README.md`](community/README.md) first.** Every route below runs on a vendor's consumer sign-in, works as of the date its row there gives, and is not guaranteed to keep working: a vendor can change its terms or enforcement at any time.
+
 `ClaudeAgentLM` runs a Claude Pro/Max subscription through the official **Claude Agent SDK**, which
-spawns the `claude` CLI per call. Anthropic's support article covers that path explicitly: "You can
-still use the Claude Agent SDK, `claude -p`, and third-party apps with your subscription limits"
-([support.claude.com, "Use the Claude Agent SDK with your Claude plan"][claude-plan-sdk], read
-2026-10-14; the same page's 2026-06-15 update says the previously-announced changes to Agent SDK
-usage are PAUSED, so read it for the current state rather than trusting this quote's date).
+spawns the `claude` CLI per call. What Anthropic says about that path, quoted with the date it was
+read, is in the community README's table ([support.claude.com, "Use the Claude Agent SDK with your
+Claude plan"][claude-plan-sdk]).
 
 One kwarg is a cost multiplier here. `n=k` asks dspy for k candidates, dspy runs one engine call
 per candidate, and each of those is a separate `claude` CLI spawn charged to your own usage window:
@@ -2826,7 +2827,7 @@ cached / custom client in production. It's the public seam for a test double, so
 has to reach into private runtime state; read the active config back with `get_config()`.
 
 **Claude-subscription auto-routing.** Set `RLM_MAIN_MODEL`/`RLM_SUB_MODEL` (or pass `main_model=`/
-`sub_model=` on `RLMConfig`) to `claude_agent_lm.SUBSCRIPTION_PREFIX` + a model id: e.g.
+`sub_model=` on `RLMConfig`) to `SUBSCRIPTION_PREFIX` + a model id: e.g.
 `claude-agent-sdk/claude-sonnet-5`, and `configure()` builds a `ClaudeAgentLM` for that role
 automatically; no explicit `main_lm=`/`sub_lm=` wiring needed. An explicit `main_lm=`/`sub_lm=`
 kwarg still wins outright regardless of the model string. The prefix is only consulted for a role

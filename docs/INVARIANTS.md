@@ -141,12 +141,12 @@ reason is in the rule.
 - **Keep the dspy-free modules dspy-free.** `config.py`, `_retry.py`, `sandbox.py`, `tools/`,
   `trace.py`, `skills.py`, `replay.py`, `dataset.py`, `serving.py`, `harness_serve.py`,
   `_dspy_compat.py`, `metrics.py`, `rubric.py`, `_toolname.py`, `atomic.py`, `isolation.py`,
-  `memory.py`, `memory_organise.py`, `memory_vectors.py`, `large_text.py`, `prompt_record.py` must NOT import `dspy` at module top:
+  `memory.py`, `memory_organise.py`, `memory_vectors.py`, `large_text.py`, `prompt_record.py`, `community/__init__.py` must NOT import `dspy` at module top:
   that keeps their logic testable without dspy. Only `task.py`, `runtime.py`, `sub_lm.py` (lazily), `mcp.py`,
-  `container_interpreter.py`, `testing.py`, `claude_agent_lm.py` and `memory_tasks.py` touch dspy:
+  `container_interpreter.py`, `testing.py`, `community/claude_agent_lm.py` and `memory_tasks.py` touch dspy:
   the last five live outside the dspy-free set and are lazily imported (by `__getattr__` / by
   `sandbox.build_interpreter`'s `"container"` branch / inside `testing.py`'s functions), so
-  `sandbox.py`'s module top and `import rlm_harness` stay dspy-free. `claude_agent_lm.py` (optional
+  `sandbox.py`'s module top and `import rlm_harness` stay dspy-free. `community/claude_agent_lm.py` (optional
   `rlm-harness[subscription]`) additionally keeps its `claude-agent-sdk` import out of module top:
   deferred to instance construction, so `rlm_harness.ClaudeAgentLM` is gettable without the extra,
   like `mcp_tools`.
@@ -180,6 +180,7 @@ reason is in the rule.
   `<3.5.0` (see `pyproject.toml`) until then. `intercept_sub_lm`'s wrapper is NOT on the deprecated
   interface and needs no migration: it overrides `__call__`, not `forward`, and the same test
   covers it.
+- **A community route's `vendor_permission` comes from a quoted vendor statement, never from a reading of one.** `rlm_harness/community/README.md` has one row per route with the vendor's own words, a link and the date they were read, and `explicit` is set only when the vendor allows this use in writing. A route whose vendor has said nothing, or whose terms read against the use, is `not-explicit` and warns once per process when built. A permission inferred from silence, or from a forum reply nobody can attribute, is how a user loses an account on the kit's word. `tests/test_community.py` checks that each row exists, links and is dated; whether the quote still holds is re-checked by hand, and the date moves with it.
 - **`ClaudeAgentLM`'s politeness ladder rests on dspy's error CLASSIFICATION, and that dependency
   is a borrowed table.** `dspy/clients/execution.py` computes
   `retries = lm.num_retries if call.managed else 0`. While the class was unmanaged that budget was

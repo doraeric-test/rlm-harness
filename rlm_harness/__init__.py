@@ -291,7 +291,7 @@ def __getattr__(name: str):  # PEP 562 lazy re-export to defer dspy import
         from .community.claude_agent_lm import ClaudeAgentLM
 
         return ClaudeAgentLM
-    if name == "SUBSCRIPTION_PREFIX":  # the claude_agent_lm.py sentinel, joins the same lazy group
+    if name == "SUBSCRIPTION_PREFIX":  # community/claude_agent_lm.py's sentinel, same lazy group
         from .community.claude_agent_lm import SUBSCRIPTION_PREFIX
 
         return SUBSCRIPTION_PREFIX

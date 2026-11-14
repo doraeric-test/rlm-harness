@@ -61,6 +61,7 @@ from typing import TYPE_CHECKING, Any
 import dspy
 
 from ..trace import current_recorder
+from . import _note_constructed, _route
 
 if TYPE_CHECKING:  # annotations only, never imported at runtime (the SDK is an optional extra)
     from claude_agent_sdk import ClaudeAgentOptions, ResultMessage
@@ -234,14 +235,12 @@ def _prompt_tokens_from_sdk_usage(usage: dict | None) -> int:
     return sum(_token_count(usage, key) for key in _PROMPT_TOKEN_KEYS)
 
 
-#: The sentinel `ClaudeAgentLM` stamps its own `dspy.LM.model` with (see `__init__` below), the
-#: kit's own convention, not a consumer-invented one. `runtime.configure()` reads this SAME
-#: constant back to auto-route a `claude-agent-sdk/<id>` `main_model`/`sub_model` string onto a
-#: `ClaudeAgentLM` for a role the caller didn't already override with an explicit `main_lm=`/
-#: `sub_lm=`. Exported (lazily, alongside `ClaudeAgentLM`) so a consumer composing its OWN
-#: model-string convention on top gets the single source of truth instead of hardcoding the
-#: literal a second time.
-SUBSCRIPTION_PREFIX = "claude-agent-sdk/"
+#: The sentinel `ClaudeAgentLM` stamps its own `dspy.LM.model` with (see `__init__` below), read
+#: from this route's entry in `community.ROUTES`, the table `runtime.configure()` routes a
+#: `claude-agent-sdk/<id>` `main_model`/`sub_model` string by. Exported (lazily, alongside
+#: `ClaudeAgentLM`) so a consumer composing its OWN model-string convention on top reads the same
+#: value instead of hardcoding the literal a second time.
+SUBSCRIPTION_PREFIX = _route("ClaudeAgentLM").prefix
 
 
 def _require_claude_agent_sdk():
@@ -702,6 +701,7 @@ class ClaudeAgentLM(dspy.LM):
     ) -> None:
         # Fail fast at construction (with the install hint) rather than deep inside a call.
         _require_claude_agent_sdk()
+        _note_constructed("ClaudeAgentLM")
         if os.environ.get("ANTHROPIC_API_KEY") and not allow_api_key:
             raise RuntimeError(
                 "ANTHROPIC_API_KEY is set: the Claude Code CLI silently prefers it over your "
