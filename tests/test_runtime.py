@@ -198,6 +198,18 @@ def test_the_timeout_warning_names_each_routed_role_and_no_default(monkeypatch, 
     assert "600" not in msg
 
 
+def test_per_role_kwargs_on_an_auto_routed_role_warn_naming_its_class(monkeypatch, caplog):
+    """configure() did not build that LM, so the kwargs reach nothing; saying nothing would leave a
+    consumer believing its sampling settings applied."""
+    monkeypatch.setattr(rt, "_try_instrument", lambda: None)
+    _stub_claude_agent_lm(monkeypatch)
+    with caplog.at_level("WARNING", logger="rlm_harness.runtime"):
+        rt.configure(RLMConfig(main_model="claude-agent-sdk/sonnet", sub_model="x", observe=False,
+                               main_lm_kwargs={"temperature": 0.1}))
+    msg = "\n".join(r.getMessage() for r in caplog.records if "main_lm_kwargs" in r.getMessage())
+    assert "auto-routed to ClaudeAgentLM" in msg and "temperature" in msg
+
+
 def test_no_warning_when_no_role_was_auto_routed(monkeypatch, caplog):
     """A plain litellm setup consumes the knob fully: warning there would be noise, and noise
     is how a real warning gets ignored."""

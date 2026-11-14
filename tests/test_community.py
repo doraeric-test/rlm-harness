@@ -63,6 +63,24 @@ def test_no_prefix_shadows_another_or_a_litellm_provider():
     assert not taken, f"{taken} would capture model strings litellm routes by API key"
 
 
+@pytest.mark.parametrize("route", ROUTES, ids=lambda r: r.prefix)
+def test_every_shipped_prefix_routes_and_names_its_example(route, monkeypatch):
+    """Each real prefix, not only a stub: a model string under it routes to its class, and a bare
+    prefix raises naming the route's own example."""
+    import importlib
+
+    import rlm_harness.runtime as rt
+
+    module = importlib.import_module(route.module)
+    built = []
+    monkeypatch.setattr(module, route.attr, lambda model_id: built.append(model_id) or object())
+    assert route_for(route.prefix + "x") is route
+    _lm, matched = rt._maybe_subscription_lm(route.prefix + route.example)
+    assert matched is route and built == [route.example]
+    with pytest.raises(ValueError, match=re.escape(f"e.g. {route.prefix}{route.example}.")):
+        rt._maybe_subscription_lm(route.prefix)
+
+
 def test_route_for_matches_by_prefix_only():
     assert route_for("claude-agent-sdk/sonnet").attr == "ClaudeAgentLM"
     assert route_for("anthropic/claude-sonnet-5") is None

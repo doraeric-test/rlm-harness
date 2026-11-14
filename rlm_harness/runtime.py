@@ -371,13 +371,13 @@ def configure(
     main_kwargs = {**lm_kwargs, **(cfg.main_lm_kwargs or {})}
     sub_kwargs = {**lm_kwargs, **(cfg.sub_lm_kwargs or {})}
     for role, role_kwargs in (("main", cfg.main_lm_kwargs), ("sub", cfg.sub_lm_kwargs)):
-        if role_kwargs and injected[role]:
+        if role_kwargs and (injected[role] or f"{role}_lm" in auto_routed):
             # Same class of silence as the request_timeout_s warning above: the kwargs reach
             # `dspy.LM` and nothing else, so on a role whose LM this function did not build they
             # do NOTHING, and a consumer reading its own config would believe otherwise.
             logger.warning(
                 "%s_lm_kwargs=%s is ignored: the %s LM was %s, so configure() did not build it. "
-                "Pass these kwargs to the LM you inject, e.g. dspy.LM(model, **kwargs).",
+                "Pass these kwargs to an LM you build and inject, e.g. dspy.LM(model, **kwargs).",
                 role, sorted(role_kwargs), role,
                 f"auto-routed to {auto_routed[f'{role}_lm']}"
                 if f"{role}_lm" in auto_routed else "supplied explicitly",

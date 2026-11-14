@@ -18,6 +18,7 @@ All notable changes to `rlm-harness`. Format loosely follows
 
 ### Fixed
 
+- **`main_lm_kwargs` / `sub_lm_kwargs` on an auto-routed role now log a warning.** `configure()` does not build that LM, so the kwargs reached nothing, and the warning meant to say so fired only for an LM passed in by hand. It now also fires for a routed role and names the class it went to.
 - The error `RLMConfig` raises for a refused `main_lm_kwargs` / `sub_lm_kwargs` key no longer says nothing records the override. The trace names such a key in `rlm_setup.lm.unrecorded_keys`; what it never records is the value, and the message now says that.
 
 ## [1.26.0] - 2026-11-06

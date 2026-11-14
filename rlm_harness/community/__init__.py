@@ -24,6 +24,8 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["EXPLICIT", "NOT_EXPLICIT", "ROUTES", "Route", "route_for"]
+
 #: A vendor has said in writing that this use of a consumer plan is allowed.
 EXPLICIT = "explicit"
 #: No such statement exists, or the vendor's terms read against this use.
@@ -62,7 +64,10 @@ def route_for(model: str) -> Route | None:
 
 def _route(attr: str) -> Route:
     """The route served by the class named ``attr``. Adapters read their own prefix through it."""
-    return next(route for route in ROUTES if route.attr == attr)
+    for route in ROUTES:
+        if route.attr == attr:
+            return route
+    raise LookupError(f"no entry in rlm_harness.community.ROUTES serves {attr!r}")
 
 
 _noted: set[str] = set()

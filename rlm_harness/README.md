@@ -1490,7 +1490,7 @@ while the prompt still offered it.
 
 ## Subscription logins: this kit's adapter, and dspy's own providers
 
-**Read [`community/README.md`](community/README.md) first.** Every route below runs on a vendor's consumer sign-in, works as of the date its row there gives, and is not guaranteed to keep working: a vendor can change its terms or enforcement at any time.
+**Read [`community/README.md`](community/README.md) first.** This kit's route below runs on a vendor's consumer sign-in, works as of the date its row there gives, and is not guaranteed to keep working: a vendor can change its terms or enforcement at any time. The same README says why dspy's own sign-in providers, also covered below, carry the same risk.
 
 `ClaudeAgentLM` runs a Claude Pro/Max subscription through the official **Claude Agent SDK**, which
 spawns the `claude` CLI per call. What Anthropic says about that path, quoted with the date it was
